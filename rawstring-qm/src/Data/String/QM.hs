@@ -81,17 +81,17 @@ makeExprF1 a =
    then
      do
       l <- TH.newName "lookup" -- string -> value
-      x <- makeExprF l a
-      return $ TH.LamE [TH.VarP l ] x
+      x <- TH.appE [| fromString |] $ makeExprF l a
+      return $ TH.LamE [TH.VarP l ] $ x
    else
-     makeExpr a
+      TH.appE [| fromString |] $ makeExpr a
 
 makeExprF l [] = ls ""
 makeExprF l ((Literal a):xs)   = TH.appE [| (++) a  |] 
                                     $ makeExprF l xs
 makeExprF l ((AntiQuote a):xs) = TH.appE [| (++) $(reifyM a) |] 
                               $ makeExprF l xs
-makeExprF l ((Lookup a):xs) = TH.appE [| (++) ((fromMaybe $(reifyM a) $( return $ TH.AppE (TH.VarE l) (TH.LitE (TH.StringL a)) ))  ) |] 
+makeExprF l ((Lookup a):xs) = TH.appE [| (++) ((fromMaybe "" $( return $ TH.AppE (TH.VarE l) (TH.LitE (TH.StringL a)) ))  ) |] 
                               $ makeExprF l xs
 
 hasLookup []               = False
