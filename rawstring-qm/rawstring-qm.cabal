@@ -4,7 +4,8 @@
 name:                rawstring-qm
 version:             0.1.4
 synopsis:            Simple raw string quotation and dictionary interpolation
--- description:         
+description:         Supply a couple of usefull QuasiQuotes so we can use functions to lookup values
+                     This is an initial, and unstable package.
 homepage:            https://github.com/tolysz/rawstring-qm
 license:             BSD3
 license-file:        LICENSE
