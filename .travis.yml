@@ -19,8 +19,9 @@ before_install:
  - cabal --version
 
 install:
- - travis_retry cabal update
- - cabal install --only-dependencies --enable-tests
+ - cabal update
+ - cabal install alex happy
+ - cabal install --enable-tests
 
 script:
  - cabal configure --enable-tests --enable-library-coverage || cabal configure --enable-tests --enable-coverage
