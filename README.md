@@ -1,3 +1,9 @@
+# rawstring-qm 
+[![Coverage Status](https://img.shields.io/coveralls/tolysz/rawstring-qm.svg)](https://coveralls.io/r/tolysz/rawstring-qm)
+[![Build Status](https://travis-ci.org/tolysz/rawstring-qm.svg?branch=master)](https://travis-ci.org/tolysz/rawstring-qm)
+[![Latest Version](https://img.shields.io/hackage/v/rawstring-qm.svg)](https://hackage.haskell.org/package/rawstring-qm)
+
+
 
 Simple library to make haskell more user friendly.
 
