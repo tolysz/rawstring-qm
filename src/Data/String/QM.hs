@@ -83,19 +83,19 @@ unQM a (x:xs)      = unQM (x:a) xs
 makeExpr [] = ls ""
 makeExpr (Literal a:xs)   = TH.appE [| (<>) a |]
                             $ makeExpr xs
-makeExpr (AntiQuote a:xs) = TH.appE [| (<>) (reify a) |]
+makeExpr (AntiQuote a:xs) = TH.appE [| (<>) (reify $ mkName  a) |]
                             $ makeExpr xs
 
 makeExprT [] = ls ""
 makeExprT (Literal a:xs)   = TH.appE [| (<>) a |]
                             $ makeExprT xs
-makeExprT (AntiQuote a:xs) = TH.appE [| (<>) (toText (reify a)) |]
+makeExprT (AntiQuote a:xs) = TH.appE [| (<>) (toText (reify $ mkName a)) |]
                             $ makeExprT xs
 
 makeExprTL [] = ls ""
 makeExprTL (Literal a:xs)   = TH.appE [| (<>) a |]
                             $ makeExprT xs
-makeExprTL (AntiQuote a:xs) = TH.appE [| (<>) (toLazyText (reify a)) |]
+makeExprTL (AntiQuote a:xs) = TH.appE [| (<>) (toLazyText (reify $ mkName a)) |]
                             $ makeExprT xs
 
 
