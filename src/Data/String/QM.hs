@@ -6,6 +6,7 @@
 module Data.String.QM
  ( qq
  , qm
+ , qn
  , qt
  , qtl
  )
@@ -47,6 +48,14 @@ qm = QuasiQuoter (makeExpr . parseQM [])
                  (error "Cannot use qm as a type")
                  (error "Cannot use qm as a dec")
 
+-- | QuasiQuoter for interpolating '${expr}' into a string literal.
+--  var and expr are just Names
+qn :: QuasiQuoter
+qn = QuasiQuoter (makeExpr . parseQN [])
+                 (error "Cannot use qm as a pattern")
+                 (error "Cannot use qm as a type")
+                 (error "Cannot use qm as a dec")
+
 -- | QuasiQuoter for interpolating '$var' and '${expr}' into a string literal.
 --  var and expr are just Names output is of type text vars are auto converted to text
 qt :: QuasiQuoter
@@ -79,6 +88,25 @@ unQM a ('\\':x:xs) = unQM (x:a) xs
 unQM a "\\"        = unQM ('\\':a) []
 unQM a ('}':xs)    = AntiQuote (reverse a) : parseQM [] xs
 unQM a (x:xs)      = unQM (x:a) xs
+
+
+
+parseQN a []           = [Literal (reverse a)]
+parseQN a ('\\':x:xs)  = parseQN (x:a) xs
+parseQN a "\\"         = parseQN ('\\':a) []
+
+parseQN a ('$':'{':xs)     = Literal (reverse a) : unQN [] xs
+-- parseQN a ('$':x:xs) | x == '_' || isAlpha x =
+--    Literal (reverse a) : AntiQuote (x:pre) : parseQN [] post
+--    where
+--    (pre, post) = span isIdent xs
+parseQN a (x:xs)       = parseQN (x:a) xs
+
+
+unQN a ('\\':x:xs) = unQN (x:a) xs
+unQN a "\\"        = unQN ('\\':a) []
+unQN a ('}':xs)    = AntiQuote (reverse a) : parseQN [] xs
+unQN a (x:xs)      = unQN (x:a) xs
 
 makeExpr [] = ls ""
 makeExpr (Literal a:xs)   = TH.appE [| (++) a |]
