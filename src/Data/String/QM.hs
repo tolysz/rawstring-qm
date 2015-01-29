@@ -81,23 +81,25 @@ unQM a ('}':xs)    = AntiQuote (reverse a) : parseQM [] xs
 unQM a (x:xs)      = unQM (x:a) xs
 
 makeExpr [] = ls ""
-makeExpr (Literal a:xs)   = TH.appE [| (<>) a |]
+makeExpr (Literal a:xs)   = TH.appE [| (++) a |]
                             $ makeExpr xs
-makeExpr (AntiQuote a:xs) = TH.appE [| (<>) (reify $ mkName  a) |]
+makeExpr (AntiQuote a:xs) = TH.appE [| (++) $(varE (mkName a)) |]
                             $ makeExpr xs
 
 makeExprT [] = ls ""
 makeExprT (Literal a:xs)   = TH.appE [| (<>) a |]
                             $ makeExprT xs
-makeExprT (AntiQuote a:xs) = TH.appE [| (<>) (toText (reify $ mkName a)) |]
+makeExprT (AntiQuote a:xs) = TH.appE [| (<>) (toText $(varE (mkName a))) |]
                             $ makeExprT xs
 
 makeExprTL [] = ls ""
 makeExprTL (Literal a:xs)   = TH.appE [| (<>) a |]
-                            $ makeExprT xs
-makeExprTL (AntiQuote a:xs) = TH.appE [| (<>) (toLazyText (reify $ mkName a)) |]
-                            $ makeExprT xs
+                            $ makeExprTL xs
+makeExprTL (AntiQuote a:xs) = TH.appE [| (<>) (toLazyText $(varE (mkName a))) |]
+                            $ makeExprTL xs
 
+-- reify' = varE . mkName
+-- reify
 
 ls = return . TH.LitE . TH.StringL
 
