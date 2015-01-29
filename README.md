@@ -17,13 +17,17 @@ No interpolation:
     sadsdasd
     asdsad
     dsaad
-    |]
+    |] == :: String
 
     let asb="bla"
+        adv="bla"
     [qm| bla $asb bla |]
     [qm| bla bla bla |]
-    [qm| bla bla {adv} |] (`lookup` [("adv","bla")])
-    [qm| bla $bla {bla} |] (`lookup` [("adv","bla")])
+    [qm| bla bla ${adv} |]
+    [qm| bla $asb ${adv} |]
+
+    [qt| |] -- like qm but produces :: Text and uses ToText before concat
+    [qtl| |] --- Text.Lazy version
 
 all would give "bla bla bla"
 
