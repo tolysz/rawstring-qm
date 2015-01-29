@@ -1,5 +1,5 @@
 name:                rawstring-qm
-version:             0.2.2.1
+version:             0.2.2.2
 cabal-version:       >=1.10
 synopsis:            Simple raw string quotation and dictionary interpolation
 description:         Supply a couple of usefull QuasiQuotes so we can use functions to lookup values
@@ -9,7 +9,7 @@ license:             BSD3
 license-file:        LICENSE
 author:              Marcin Tolysz
 maintainer:          tolysz@gmail.com
-copyright:           ©2014-15 Marcin Tolysz
+copyright:           (c)2014-15 Marcin Tolysz
 category:            Text
 build-type:          Simple
 extra-source-files:  CHANGES
