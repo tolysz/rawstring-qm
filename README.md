@@ -27,7 +27,7 @@ No interpolation:
     [qm| bla $asb ${adv} |]
 
     [qt| |] -- like qm but produces :: Text and uses ToText before concat
-    [qtl| |] --- Text.Lazy version
+    [qtl| |] --- Text.Lazy 
 
 all would give "bla bla bla"
 
