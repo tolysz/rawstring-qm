@@ -1,5 +1,5 @@
 name:                rawstring-qm
-version:             0.1.6
+version:             0.2.0
 cabal-version:       >=1.10
 synopsis:            Simple raw string quotation and dictionary interpolation
 description:         Supply a couple of usefull QuasiQuotes so we can use functions to lookup values
@@ -28,7 +28,6 @@ library
                ,       text
                ,       template-haskell
                ,       bytestring
-               ,       haskell-src-meta
 
   hs-source-dirs:      src
   default-language:    Haskell2010

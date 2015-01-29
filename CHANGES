@@ -1,3 +1,7 @@
+0.2.0
+* remove lookup i.e. {} will not work from qm
+* add tl qtl
+* drop monster `haskell-src-meta` dependency
 0.1.6
 *Bounds for 7.6.3
 0.1.5
