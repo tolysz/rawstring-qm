@@ -3,6 +3,7 @@
            , FlexibleInstances
            , ScopedTypeVariables
            , OverloadedStrings
+           , UndecidableInstances
            #-}
 
 module Data.Text.ToText where
@@ -12,14 +13,14 @@ import Data.Text
 import qualified Data.Text.Lazy as TL
 import Data.Text.Lazy (toStrict)
 import qualified Data.Text.Lazy.Builder as TLB (toLazyText)
-import Data.Text.Lazy.Builder.Int (decimal)
-import Data.Text.Lazy.Builder.RealFloat (realFloat)
 
 import qualified Data.ByteString as BS
 import qualified Data.ByteString.Lazy as BSL
 
 import qualified Data.Text.Encoding as T
 import qualified Data.Text.Lazy.Encoding as TL
+
+import Data.Text.ToTextBuilder
 
 import Text.Read
 import Data.Typeable
@@ -33,25 +34,18 @@ class (Typeable a, Read a) => ToText a where
 
     fromText :: Text -> Either Text a
     fromText v = maybe (Left $ "parse failed: `" <> v <>"` can not be parsed as" <> pack (show (typeOf (undefined :: a))) ) Right . readMaybe . unpack $ v
+
     maybeFromText :: Text -> Maybe a
     maybeFromText = either (const Nothing) Just . fromText
 
     fromLazyText :: TL.Text -> Either Text a
     fromLazyText = fromText . toStrict
+
     maybeFromLazyText :: TL.Text -> Maybe a
     maybeFromLazyText = either (const Nothing) Just . fromLazyText
 
-instance ToText Int where
-    toLazyText = TLB.toLazyText . decimal
-
-instance ToText Integer where
-    toLazyText = TLB.toLazyText . decimal
-
-instance ToText Float where
-    toLazyText = TLB.toLazyText . realFloat
-
-instance ToText Double where
-    toLazyText = TLB.toLazyText . realFloat
+instance {-# OVERLAPPABLE #-} (ToTextBuilder a, Read a, Typeable a) => ToText a where
+    toLazyText = TLB.toLazyText . toTextBuilder
 
 instance ToText Text where
     toText     = id
