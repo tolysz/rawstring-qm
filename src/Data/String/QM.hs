@@ -25,10 +25,10 @@ import           Data.ByteString.Lazy.Char8           as Lazy (ByteString,
 import           Data.Char                            (isAlpha, isAlphaNum)
 import           Data.Maybe
 import           Data.Monoid                          (Monoid (..), (<>))
-import           Data.Text                            as T (Text, unpack)
+import           Data.Text                            as T (Text, unpack, pack)
 import qualified Data.Text.Internal.Builder           as B
 import qualified Data.Text.Internal.Builder.Functions as B
-import           Data.Text.Lazy                       as LazyT (Text, unpack)
+import           Data.Text.Lazy                       as LazyT (Text, unpack, pack)
 import           GHC.Exts                             (IsString (..))
 import qualified Language.Haskell.TH                  as TH
 
@@ -43,7 +43,7 @@ data StringPart = Literal String | AntiQuote String deriving Show
 --  if you put it as a pattern it will expan to 'a':'b':'c'...
 qq :: QuasiQuoter
 qq = QuasiQuoter
-    { quoteExp  = ls
+    { quoteExp  = return . TH.LitE . TH.StringL
     , quotePat  = return . expandIntoCons
     , quoteType = \_ -> fail "illegal raw string QuasiQuote (allowed as expression only, used as a type)"
     , quoteDec  = \_ -> fail "illegal raw string QuasiQuote (allowed as expression only, used as a declaration)"
@@ -125,34 +125,32 @@ unQN a "\\"        = unQN ('\\':a) []
 unQN a ('}':xs)    = AntiQuote (reverse a) : parseQN [] xs
 unQN a (x:xs)      = unQN (x:a) xs
 
-makeExpr [] = ls ""
+makeExpr [] = [| mempty |]
 makeExpr (Literal a:xs)   = TH.appE [| (++) a |]
                             $ makeExpr xs
 makeExpr (AntiQuote a:xs) = TH.appE [| (++) $(varE (mkName a)) |]
                             $ makeExpr xs
 
-makeExprT [] = ls ""
-makeExprT (Literal a:xs)   = TH.appE [| (<>) a |]
+makeExprT [] = [| mempty |]
+makeExprT (Literal a:xs)   = TH.appE [| (<>) (T.pack a) |]
                             $ makeExprT xs
 makeExprT (AntiQuote a:xs) = TH.appE [| (<>) (toText $(varE (mkName a))) |]
                             $ makeExprT xs
 
-makeExprTL [] = ls ""
-makeExprTL (Literal a:xs)   = TH.appE [| (<>) a |]
+makeExprTL [] = [| mempty |]
+makeExprTL (Literal a:xs)   = TH.appE [| (<>) (LazyT.pack a) |]
                             $ makeExprTL xs
 makeExprTL (AntiQuote a:xs) = TH.appE [| (<>) (toLazyText $(varE (mkName a))) |]
                             $ makeExprTL xs
 
-makeExprTB [] = ls ""
-makeExprTB (Literal a:xs)   = TH.appE [| (B.<>) (B.fromLazyText a) |]
+makeExprTB [] = [| mempty |]
+makeExprTB (Literal a:xs)   = TH.appE [| (B.<>) (B.fromString a) |]
                                       $ makeExprTB xs
 makeExprTB (AntiQuote a:xs) = TH.appE [| (B.<>) (toTextBuilder $(varE (mkName a))) |]
                                       $ makeExprTB xs
 
 -- reify' = varE . mkName
 -- reify
-
-ls = return . TH.LitE . TH.StringL
 
 isIdent '_'  = True
 isIdent '\'' = True
