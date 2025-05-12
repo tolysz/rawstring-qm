@@ -33,7 +33,7 @@ class (Typeable a, Read a) => ToText a where
     toLazyText :: a -> TL.Text
 
     fromText :: Text -> Either Text a
-    fromText v = maybe (Left $ "parse failed: `" <> v <>"` can not be parsed as" <> pack (show (typeOf (undefined :: a))) ) Right . readMaybe . unpack $ v
+    fromText v = maybe (Left $ "parse failed: `" <> v <>"` can not be parsed as" <> pack (Prelude.show (typeOf (undefined :: a))) ) Right . readMaybe . unpack $ v
 
     maybeFromText :: Text -> Maybe a
     maybeFromText = either (const Nothing) Just . fromText
